@@ -1,7 +1,34 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: './server/.env' });
 import express from 'express';
-import 'dotenv/config';
+
+
 
 const app = express();
+
+import helmet from 'helmet';
+app.use(helmet());
+
+import { rateLimit } from 'express-rate-limit';
+const generalLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	limit: 50, // Limit each IP to 50 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
+	// store: ... , // Redis, Memcached, etc. See below.
+});
+app.use(generalLimiter);
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 5,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    ipv6Subnet: 56,
+});
+app.use('/auth', authLimiter);
+
 
 import cors from 'cors';
 app.use(cors({
@@ -11,11 +38,13 @@ app.use(cors({
 
 import session from 'express-session';
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'super-secret-development-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
 }));
+
+app.use(express.json());
 
 import authRouter from "./routers/authRouter.js";
 app.use(authRouter);

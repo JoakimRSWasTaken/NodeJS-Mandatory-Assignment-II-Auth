@@ -1,23 +1,74 @@
 import { Router } from 'express';
+import { hashPassword, comparePasswords } from '../utils/passwordHashing.js';
+import { sendWelcomeMail } from '../utils/mailSender.js';
+import db from '../database/connection.js';
 
 const router = Router();
 
+async function isAdmin(req, res, next) {
+    // Check if user is logged in with a session and if they are admin
+    // In the case that they are not, they will get an error
+    if (req.session.user && req.session.user.isAdmin) {
+        next();
+    } else {
+        res.status(403).send({ errorMessage: "You don't have the right, O, you don't have the right." });
+    }
+}
 
-router.post('/auth/login', (req, res) => {
+router.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        res.status(400).send({ errorMessage: "Please provide both email and password."})
+        res.status(400).send({ errorMessage: "Please provide both email and password." });
+    }
+
+    const user = await db.run(`SELECT * WHERE email = ?`, [email]);
+    if (!user) {
+        // No matching email is found in the database
+        return res.status(401).send({ errorMessage: "Wrong email or password." });
+    }
+
+    const userHashedPassword = user.hashed_password;
+    const isSamePassword = await comparePasswords(password, userHashedPassword);
+    if (!isSamePassword) {
+        // The input password does not match the password in the database
+        return res.status(401).send({ errorMessage: "Wrong email or password." });
+    }
+
+    let isAdmin = false;
+    if (user.is_admin === 1) {
+        isAdmin = true;
+    }
+
+    req.session.user = {
+        email: user.email,
+        isAdmin: isAdmin
     }
 });
 
 router.post('/auth/logout', (req, res) => {
-    
+    req.session.destroy(() => {
+        res.send({ data: "User logged out." });
+    });
 });
 
-router.post('/auth/signup', (req, res) => {
+router.post('/auth/signup', async (req, res) => {
+    const { email, password } = req.body;
 
+    if (!email || !password) {
+        res.status(400).send({ errorMessage: "Please provide both email and password." });
+    }
+
+    const hashedPassword = await hashPassword(password);
+    await db.run(`INSERT INTO users (email, hashed_password, is_admin) VALUES (?, ?, ?)`, [email, hashedPassword, 0]);
+
+    try {
+        await sendWelcomeMail(email)
+    } catch (error) {
+        console.error({ errorMessage: 'Error sending welcome mail', error });
+    }
+
+    res.status(201).send({ message: `User with email ${email} created.` });
 });
-
 
 export default router;
