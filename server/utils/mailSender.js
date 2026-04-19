@@ -24,7 +24,7 @@ export async function sendWelcomeMail(recipientEmail) {
         to: recipientEmail,
         subject: 'Welcome to the flock!',
         text: 'We are very happy to see you the Serpent King as family! Together we will devour the very Gods!',
-        html: '<h1>We are very happy to see you join the Serpent King as family!</h1></br><>Together we will devour the very Gods!',
+        html: '<h1>We are very happy to see you join the Serpent King as family!</h1></br><h3>Together we will devour the very Gods!</h3>',
     });
 
     const previewUrl = nodemailer.getTestMessageUrl(info);
