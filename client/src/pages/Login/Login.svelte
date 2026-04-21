@@ -48,7 +48,7 @@
                         required
                         placeholder="Type your email address..."
                     />
-                    <label>Adgangskode</label>
+                    <label>Password</label>
                     <input
                         bind:value={loginPassword}
                         name="password"
@@ -75,7 +75,7 @@
                         required
                         placeholder="Type your email address..."
                     />
-                    <label>Adgangskode</label>
+                    <label>Password</label>
                     <input
                         bind:value={signupPassword}
                         name="password"
@@ -96,8 +96,9 @@
     .card-container {
         perspective: 1000px;
         width: 62.5rem;
-        height: 50vh;
-        min-height: 4rem;
+        height: 65vh;
+        min-height: 50%;
+        /* min-height: 4rem; */
         margin: 1rem auto;
     }
 
@@ -120,6 +121,8 @@
         left: 0;
         width: 100%;
         height: 100%;
+        min-height: 15em;
+        border-radius: 6px;
         background: rgb(89, 89, 88);
         backface-visibility: hidden;
         border: 1px solid;
@@ -131,26 +134,41 @@
         transform: rotateY(180deg);
     }
 
+    fieldset {
+        border: none;
+    
+    }
+
     button {
-        background-color: #000000;
-        border: 2px solid #1a1a1a;
-        border-radius: 15px;
+        background-color: #fff;
+        border: 1px solid #d5d9d9;
+        border-radius: 8px;
+        box-shadow: rgba(213, 217, 217, 0.5) 0 2px 5px 0;
         box-sizing: border-box;
-        color: #ffffff;
+        color: #0f1111;
+        cursor: pointer;
         display: inline-block;
-        font-size: 16px;
-        font-weight: 600;
-        line-height: normal;
-        margin: 0;
-        min-width: 0;
-        max-width: 20rem;
-        min-height: 60px;
-        max-height: 3rem;
-        padding: 16px 24px;
+        font-family: "Amazon Ember", sans-serif;
+        font-size: 13px;
+        line-height: 29px;
+        padding: 0 10px 0 11px;
+        position: relative;
         text-align: center;
         text-decoration: none;
         user-select: none;
-        width: 25%;
-        
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        width: 120px;
+    }
+
+    button:hover {
+        background-color: #f7fafa;
+    }
+
+    button:focus {
+        border-color: #008296;
+        box-shadow: rgba(213, 217, 217, 0.5) 0 2px 5px 0;
+        outline: 0;
     }
 </style>

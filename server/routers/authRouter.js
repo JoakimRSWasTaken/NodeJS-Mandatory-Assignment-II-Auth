@@ -11,38 +11,53 @@ async function isAdmin(req, res, next) {
     if (req.session.user && req.session.user.isAdmin) {
         next();
     } else {
-        res.status(403).send({ errorMessage: "You don't have the right, O, you don't have the right." });
+        return res.status(403).send({ errorMessage: "You don't have the right, O, you don't have the right." });
     }
 }
 
 router.post('/auth/login', async (req, res) => {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    if (!email || !password) {
-        res.status(400).send({ errorMessage: "Please provide both email and password." });
-    }
+        if (!email || !password) {
+            return res.status(400).send({ errorMessage: "Please provide both email and password." });
+        }
 
-    const user = await db.run(`SELECT * WHERE email = ?`, [email]);
-    if (!user) {
-        // No matching email is found in the database
-        return res.status(401).send({ errorMessage: "Wrong email or password." });
-    }
+        console.log("Nu kører vi SQL...");
+        console.log(email);
+        console.log(password);
 
-    const userHashedPassword = user.hashed_password;
-    const isSamePassword = await comparePasswords(password, userHashedPassword);
-    if (!isSamePassword) {
-        // The input password does not match the password in the database
-        return res.status(401).send({ errorMessage: "Wrong email or password." });
-    }
+        const user = await db.get(`SELECT * FROM users WHERE email = ?`, [email]);
+        if (!user) {
+            // No matching email is found in the database
+            return res.status(401).send({ errorMessage: "Wrong email or password." });
+        }
 
-    let isAdmin = false;
-    if (user.is_admin === 1) {
-        isAdmin = true;
-    }
+        console.log(user);
 
-    req.session.user = {
-        email: user.email,
-        isAdmin: isAdmin
+        const userHashedPassword = user.hashed_password;
+        const isSamePassword = await comparePasswords(password, userHashedPassword);
+        if (!isSamePassword) {
+            // The input password does not match the password in the database
+            return res.status(401).send({ errorMessage: "Wrong email or password." });
+        }
+
+        console.log("Is the passwrod the same?", isSamePassword);
+
+        let isAdmin = false;
+        if (user.is_admin === 1) {
+            isAdmin = true;
+        }
+
+        req.session.user = {
+            email: user.email,
+            isAdmin: isAdmin
+        }
+        
+        return res.send({ message: 'Logged in as user: ', user: req.session.user });
+    } catch (error) {
+        console.error('FEJL FEJL, JEG GÅR AMOK', error);
+        res.status(500).send({ errorMessage: 'Pis mig i munden'});
     }
 });
 

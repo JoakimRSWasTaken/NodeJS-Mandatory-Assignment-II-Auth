@@ -2,12 +2,16 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './server/.env' });
 import express from 'express';
 
-
-
 const app = express();
 
 import helmet from 'helmet';
 app.use(helmet());
+
+import cors from 'cors';
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 
 import { rateLimit } from 'express-rate-limit';
 const generalLimiter = rateLimit({
@@ -20,21 +24,14 @@ const generalLimiter = rateLimit({
 });
 app.use(generalLimiter);
 
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 5,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    ipv6Subnet: 56,
-});
-app.use('/auth', authLimiter);
-
-
-import cors from 'cors';
-app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
-}));
+// const authLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     limit: 5,
+//     standardHeaders: 'draft-8',
+//     legacyHeaders: false,
+//     ipv6Subnet: 56,
+// });
+// app.use('/auth', authLimiter);
 
 import session from 'express-session';
 app.use(session({
