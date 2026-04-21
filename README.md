@@ -12,3 +12,16 @@
 6. I terminal 1, kør `$ node server/app.js` eller `$ nodemon server/app.js`
 7. I terminal 2, kør `$ npm run dev`
 8. Åbn `https://localhost:5173`
+
+### Der ligger to brugere lige nu:
+Admin
+email: test@admin.com
+password: admin123
+
+User
+email: test@user.com
+password: user123
+
+### Hvad fungerer ikke:
+- Jeg har nogle issues med at jeg f.eks. rammer mit /user endpoint når jeg logger ind som admin.
+- Jeg er ikke helt sikker på, om der er andet der ikke fungerer.
