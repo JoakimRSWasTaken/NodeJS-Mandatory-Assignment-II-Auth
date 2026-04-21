@@ -1,8 +1,8 @@
 <script>
     import { fetchPost } from "../../utils/fetchUtil.js";
     import toast, { Toaster } from "svelte-french-toast";
-    import { currentUser } from "../../stores/userStore.js";
-    // @ts-ignore
+    import { currentUser } from "../../stores/userStore";
+        // @ts-ignore
     import { useNavigate } from "svelte-navigator";
 
     const navigate = useNavigate();
@@ -19,9 +19,10 @@
             toast.error('Something went wrong...');
         }
     }
+
 </script>
 
-<h2>Welcome regular user {$currentUser.email}</h2>
+<h2>Welcome administrator {$currentUser.email}</h2>
 
 <button on:click={ handleLogout }>Log out</button>
 

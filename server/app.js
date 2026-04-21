@@ -43,8 +43,14 @@ app.use(session({
 
 app.use(express.json());
 
-import authRouter from "./routers/authRouter.js";
+import authRouter from './routers/authRouter.js';
 app.use(authRouter);
+
+import adminRouter from './routers/adminRouter.js';
+app.use(adminRouter);
+
+import userRouter from './routers/userRouter.js';
+app.use(userRouter);
 
 const PORT = process.env.PORT ?? 8080;
 

@@ -1,6 +1,9 @@
 <script>
     import { fetchPost } from "../../utils/fetchUtil.js";
     import toast, { Toaster } from "svelte-french-toast";
+    import { currentUser } from "../../stores/userStore.js";
+    // @ts-ignore
+    import { useNavigate } from "svelte-navigator";
 
     let loginMode = true;
 
@@ -9,6 +12,8 @@
 
     let signupEmail = "";
     let signupPassword = "";
+
+    const navigate = useNavigate();
 
     function flipLoginCard() {
         loginMode = !loginMode;
@@ -22,11 +27,11 @@
 
         try {
             const result = await fetchPost(endpoint, { email, password });
-
+            console.log('Result: ', result);
             if (!loginMode) {
                 // If you just signed up you get sent to the login page
-                toast.success('You have just signed up! Check your email!', {
-                    position: "top-right"
+                toast.success("You have just signed up! Check your email!", {
+                    position: "top-right",
                 });
                 flipLoginCard();
                 signupEmail = "";
@@ -36,12 +41,22 @@
                 toast.success("Successfully logged in!", {
                     position: "top-right",
                 });
+                
+                const responseUser = result.user;
+
+                currentUser.set(result.user); // Saving user in the store ^^
+
+                if (result.user.isAdmin === 1) { 
+                    navigate('/admin');
+                } else {
+                    navigate('/user');
+                }
             }
         } catch (error) {
             // If the fetchPost throws an error we catch it here
             console.log(error);
-            toast.error('Something went wrong...', {
-                position: "top-right"
+            toast.error("Something went wrong...", {
+                position: "top-right",
             });
         }
     }
@@ -53,22 +68,22 @@
             <h2>Login</h2>
             <form on:submit={handleAuth}>
                 <fieldset>
-                    <label>Email</label>
                     <input
                         bind:value={loginEmail}
                         name="email"
                         type="email"
                         required
-                        placeholder="Type your email address..."
+                        placeholder="Email address"
                     />
-                    <label>Password</label>
+                    <br />
                     <input
                         bind:value={loginPassword}
                         name="password"
                         type="password"
                         required
-                        placeholder="Type your password..."
+                        placeholder="Password"
                     />
+                    <br />
                 </fieldset>
                 <button type="submit">Login</button>
             </form>
@@ -80,22 +95,22 @@
             <h2>Sign Up</h2>
             <form on:submit={handleAuth}>
                 <fieldset>
-                    <label>Email</label>
                     <input
                         bind:value={signupEmail}
                         name="email"
                         type="email"
                         required
-                        placeholder="Type your email address..."
+                        placeholder="Email address"
                     />
-                    <label>Password</label>
+                    <br />
                     <input
                         bind:value={signupPassword}
                         name="password"
                         type="password"
                         required
-                        placeholder="Type your password..."
+                        placeholder="Password"
                     />
+                    <br />
                 </fieldset>
                 <button type="submit">Sign Up</button>
             </form>
@@ -172,6 +187,7 @@
         touch-action: manipulation;
         vertical-align: middle;
         width: 120px;
+        margin: 0.25rem;
     }
 
     button:hover {

@@ -5,16 +5,6 @@ import db from '../database/connection.js';
 
 const router = Router();
 
-async function isAdmin(req, res, next) {
-    // Check if user is logged in with a session and if they are admin
-    // In the case that they are not, they will get an error
-    if (req.session.user && req.session.user.isAdmin) {
-        next();
-    } else {
-        return res.status(403).send({ errorMessage: "You don't have the right, O, you don't have the right." });
-    }
-}
-
 router.post('/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -23,17 +13,11 @@ router.post('/auth/login', async (req, res) => {
             return res.status(400).send({ errorMessage: "Please provide both email and password." });
         }
 
-        console.log("Nu kører vi SQL...");
-        console.log(email);
-        console.log(password);
-
         const user = await db.get(`SELECT * FROM users WHERE email = ?`, [email]);
         if (!user) {
             // No matching email is found in the database
             return res.status(401).send({ errorMessage: "Wrong email or password." });
         }
-
-        console.log(user);
 
         const userHashedPassword = user.hashed_password;
         const isSamePassword = await comparePasswords(password, userHashedPassword);
@@ -41,8 +25,6 @@ router.post('/auth/login', async (req, res) => {
             // The input password does not match the password in the database
             return res.status(401).send({ errorMessage: "Wrong email or password." });
         }
-
-        console.log("Is the passwrod the same?", isSamePassword);
 
         let isAdmin = false;
         if (user.is_admin === 1) {
