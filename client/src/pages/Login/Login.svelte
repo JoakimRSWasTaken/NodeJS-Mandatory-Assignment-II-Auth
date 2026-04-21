@@ -1,5 +1,6 @@
 <script>
     import { fetchPost } from "../../utils/fetchUtil.js";
+    import toast, { Toaster } from "svelte-french-toast";
 
     let loginMode = true;
 
@@ -23,13 +24,25 @@
             const result = await fetchPost(endpoint, { email, password });
 
             if (!loginMode) {
+                // If you just signed up you get sent to the login page
+                toast.success('You have just signed up! Check your email!', {
+                    position: "top-right"
+                });
                 flipLoginCard();
                 signupEmail = "";
                 signupPassword = "";
             } else {
+                // If you were in login mode, you log in
+                toast.success("Successfully logged in!", {
+                    position: "top-right",
+                });
             }
         } catch (error) {
+            // If the fetchPost throws an error we catch it here
             console.log(error);
+            toast.error('Something went wrong...', {
+                position: "top-right"
+            });
         }
     }
 </script>
@@ -136,7 +149,6 @@
 
     fieldset {
         border: none;
-    
     }
 
     button {

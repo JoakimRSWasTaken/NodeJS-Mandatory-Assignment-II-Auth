@@ -12,17 +12,24 @@ export async function fetchGet(endpoint) {
 }
 
 export async function fetchPost(endpoint, body) {
-    try {
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}${endpoint}`, {
-            method: "POST",
-            credentials: 'include',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
-        });
-        return await response.json();
-    } catch (error) {
-        console.log(error);
+
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}${endpoint}`, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+    
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.errorMessage); // For the 
     }
+
+    return result;
+
+    console.log(error);
+
 }
