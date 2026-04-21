@@ -14,13 +14,13 @@
 8. Åbn `https://localhost:5173`
 
 ### Der ligger to brugere lige nu:
-Admin
-email: test@admin.com
-password: admin123
+**Admin**
+- email: `test@admin.com`
+- password: `admin123`
 
-User
-email: test@user.com
-password: user123
+**User**
+- email: `test@user.com`
+- password: `user123`
 
 ### Hvad fungerer ikke:
 - Jeg har nogle issues med at jeg f.eks. rammer mit /user endpoint når jeg logger ind som admin.
